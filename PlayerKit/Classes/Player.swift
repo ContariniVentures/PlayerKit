@@ -60,8 +60,10 @@ public class Player: AVPlayer {
 
     @objc func pause(_: Notification) {
         if loop{
-            seek(to: CMTime.zero)
-            play()
+            seek(to: CMTime.zero, completionHandler: { success in
+                self.play()
+            })
+            
         }else{
             seek(to: CMTimeMakeWithSeconds(Float64(startTime), preferredTimescale: 60), toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
             delegate?.moveToTime(startTime)
@@ -137,3 +139,4 @@ public class Player: AVPlayer {
         }
     }
 }
+
