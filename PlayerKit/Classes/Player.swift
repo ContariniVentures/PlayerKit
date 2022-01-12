@@ -19,23 +19,25 @@ public protocol PlayerDelegate: class {
 public class Player: AVPlayer {
     public weak var delegate: PlayerDelegate?
 
-    @objc public dynamic var isPlaying: Bool = false 
+    @objc public dynamic var isPlaying: Bool = false
     @objc public dynamic var isReadyToPlay: Bool = false
 
     private var endTime: CGFloat = 0.0
     private var startTime: CGFloat = 0.0
     private var timeObserver: AnyObject?
     private var autoPlay: Bool = false
+    private var loop: Bool = false
     private var playerItem: AVPlayerItem?
 
     override init() {
         super.init()
     }
 
-    @objc public init(playerItem item: AVPlayerItem, autoPlay: Bool = false) {
+    @objc public init(playerItem item: AVPlayerItem, autoPlay: Bool = false, loop: Bool = false) {
         super.init(playerItem: item)
         self.playerItem = item
         self.autoPlay = autoPlay
+        self.loop = loop
         configurePeriodicTimeObserving()
 
         item.seekingWaitsForVideoCompositionRendering = true
@@ -57,11 +59,17 @@ public class Player: AVPlayer {
     }
 
     @objc func pause(_: Notification) {
-        seek(to: CMTimeMakeWithSeconds(Float64(startTime), preferredTimescale: 60), toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
-        delegate?.moveToTime(startTime)
-        delegate?.timeChanged(startTime)
-        currentItem?.forwardPlaybackEndTime = .invalid
-        pause()
+        if loop{
+            seek(to: CMTime.zero)
+            play()
+        }else{
+            seek(to: CMTimeMakeWithSeconds(Float64(startTime), preferredTimescale: 60), toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+            delegate?.moveToTime(startTime)
+            delegate?.timeChanged(startTime)
+            currentItem?.forwardPlaybackEndTime = .invalid
+            pause()
+        }
+        
     }
 
     private func configurePeriodicTimeObserving() {
