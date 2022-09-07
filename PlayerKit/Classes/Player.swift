@@ -28,16 +28,17 @@ public class Player: AVPlayer {
     private var autoPlay: Bool = false
     private var loop: Bool = false
     private var playerItem: AVPlayerItem?
-
+    private var loopDelay: CGFloat = 0.0
     override init() {
         super.init()
     }
 
-    @objc public init(playerItem item: AVPlayerItem, autoPlay: Bool = false, loop: Bool = false) {
+    @objc public init(playerItem item: AVPlayerItem, autoPlay: Bool = false, loop: Bool = false, loopDelay: Double = 0.0) {
         super.init(playerItem: item)
         self.playerItem = item
         self.autoPlay = autoPlay
         self.loop = loop
+        self.loopDelay = loopDelay
         configurePeriodicTimeObserving()
 
         item.seekingWaitsForVideoCompositionRendering = true
@@ -60,10 +61,11 @@ public class Player: AVPlayer {
 
     @objc func pause(_: Notification) {
         if loop{
-            seek(to: CMTime.zero, completionHandler: { success in
-                self.play()
+            DispatchQueue.main.asyncAfter(deadline: .now() + self.loopDelay, execute: {
+                self.seek(to: CMTime.zero, completionHandler: { success in
+                    self.play()
+                })
             })
-            
         }else{
             seek(to: CMTimeMakeWithSeconds(Float64(startTime), preferredTimescale: 60), toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
             delegate?.moveToTime(startTime)
