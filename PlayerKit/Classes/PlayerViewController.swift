@@ -78,16 +78,16 @@ public class PlayerViewController: UIViewController {
 
         fullscreenButton.isHidden = true
 
-        let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        overlayView.addGestureRecognizer(tap)
+        let overlayTap = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+        overlayView.addGestureRecognizer(overlayTap)
         overlayView.backgroundColor = .clear
 
-        let tap2 = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        playerView.addGestureRecognizer(tap2)
+        let playerViewTap = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+        playerView.addGestureRecognizer(playerViewTap)
 
         // Workaround size UIButton sends a unhandled tap event to viewcontroller
-        let tap3 = UITapGestureRecognizer(target: self, action: #selector(playButtonOnTap(_:)))
-        playButton.addGestureRecognizer(tap3)
+        let playButtonTap = UITapGestureRecognizer(target: self, action: #selector(playButtonOnTap(_:)))
+        playButton.addGestureRecognizer(playButtonTap)
 
         playButton.isEnabled = false
         playButton.showsTouchWhenHighlighted = true
